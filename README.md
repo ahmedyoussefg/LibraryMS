@@ -62,4 +62,4 @@ DB_PASSWORD=your_mysql_password
 - `mysql-connector-java`
 - `dotenv-java`
 
-| Created by Ahmed Youssef
+> Created by Ahmed Youssef
