@@ -12,18 +12,17 @@ import org.model.Book;
 import org.model.RegularUser;
 import org.model.User;
 import org.service.SearchService;
+import org.util.InputUtil;
 
 public class LibrarySystem {
-    private final Scanner scanner;
     private final BookDAO bookDAO;
     private final UserDAO userDAO;
     private final SearchService<Book> bookSearchService;
 
     private User currentUser = null;
 
-    public LibrarySystem(Scanner scanner, BookDAO bookDAO, UserDAO userDAO,
+    public LibrarySystem(BookDAO bookDAO, UserDAO userDAO,
                          SearchService<Book> bookSearchService) {
-        this.scanner = scanner;
         this.bookDAO = bookDAO;
         this.userDAO = userDAO;
         this.bookSearchService = bookSearchService;
@@ -34,8 +33,7 @@ public class LibrarySystem {
         while (true) {
             if (currentUser == null) {
                 System.out.println("\n1. Sign Up\n2. Log In\n3. Exit");
-                System.out.print("Choose option: ");
-                String choice = scanner.nextLine();
+                String choice = InputUtil.prompt("Choose option: ");
 
                 switch (choice) {
                     case "1" -> signUp();
@@ -58,16 +56,14 @@ public class LibrarySystem {
     }
 
     private void signUp() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = InputUtil.promptNonEmpty("Enter username: ");
         User registrant = userDAO.get(username);
         if (registrant != null) {
             System.out.println("Username already exists.");
             return;
         }
 
-        System.out.print("Sign up as Admin? (y/n): ");
-        boolean isAdmin = scanner.nextLine().equalsIgnoreCase("y");
+        boolean isAdmin = InputUtil.promptYesNo("Sign up as Admin?");
 
         User user = isAdmin ? new Admin(username) : new RegularUser(username);
         userDAO.save(user);
@@ -75,8 +71,7 @@ public class LibrarySystem {
     }
 
     private void logIn() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = InputUtil.promptNonEmpty("Enter username: ");
 
         User user = userDAO.get(username);
         if (user == null) { 
@@ -93,8 +88,7 @@ public class LibrarySystem {
             System.out.println("\n--- Admin Menu ---");
             System.out.println("1. Add Book\n2. Delete Book\n3. View Catalogue\n" +
                     "4. Register a New User\n5. Log Out");
-            System.out.print("Choose option: ");
-            String choice = scanner.nextLine();
+            String choice = InputUtil.prompt("Choose option: ");
 
             switch (choice) {
                 case "1" -> addBook();
@@ -114,8 +108,7 @@ public class LibrarySystem {
         while (true) {
             System.out.println("\n--- User Menu ---");
             System.out.println("1. View Catalogue\n2. Borrow Book\n3. Return Book\n4. My Borrowed Books\n5. Log Out");
-            System.out.print("Choose option: ");
-            String choice = scanner.nextLine();
+            String choice = InputUtil.prompt("Choose option: ");
 
             switch (choice) {
                 case "1" -> viewCatalogue();
@@ -133,8 +126,7 @@ public class LibrarySystem {
 
     private void deleteBook() {
         viewCatalogue();
-        System.out.print("Enter book ID to delete: ");
-        int id = Integer.parseInt(scanner.nextLine());
+        int id = InputUtil.promptInt("Enter book ID to delete: ");
         Book book = bookDAO.get(id);
         if (book == null) {
             System.out.println("Book not found.");
@@ -148,14 +140,15 @@ public class LibrarySystem {
     private void addBook() {
         viewCatalogue();
         System.out.println("Getting ready to add a new book...");
-        System.out.print("Title: ");
-        String title = scanner.nextLine();
-        System.out.print("Author: ");
-        String author = scanner.nextLine();
-        System.out.print("Genre: ");
-        String genre = scanner.nextLine();
-        System.out.print("Number of Available Copies: ");
-        int availableCopies = Integer.parseInt(scanner.nextLine());
+        String title = InputUtil.promptNonEmpty("Title: ");
+        String author = InputUtil.promptNonEmpty("Author: ");
+        String genre = InputUtil.promptNonEmpty("Genre: ");
+        int availableCopies = InputUtil.promptInt("Number of Available Copies: ");
+
+        if (availableCopies <= 0) {
+            System.out.println("Available copies must be a positive number.");
+            return;
+        }
 
         bookDAO.save(new Book(title, author, genre, availableCopies));
         System.out.println("Book added successfully.");
@@ -186,8 +179,7 @@ public class LibrarySystem {
             return;
         }
         viewBorrowedBooks();
-        System.out.print("Enter book ID to return: ");
-        int bookId = Integer.parseInt(scanner.nextLine());
+        int bookId = InputUtil.promptInt("Enter book ID to return: ");
         Book book = bookDAO.get(bookId);
         List<Book> borrowedBooks = ((RegularUser) currentUser).getBorrowedBooks();
         if (book == null || !borrowedBooks.contains(book)) {
@@ -209,8 +201,7 @@ public class LibrarySystem {
         }
         viewCatalogue();
         viewBorrowedBooks();
-        System.out.print("Enter book ID to borrow: ");
-        int bookId = Integer.parseInt(scanner.nextLine());
+        int bookId = InputUtil.promptInt("Enter book ID to borrow: ");
         Book book = bookDAO.get(bookId);
 
         if (book == null) {
@@ -253,8 +244,7 @@ public class LibrarySystem {
             System.out.println("You must be an Admin to register a new user.");
             return;
         }
-        System.out.print("Enter username for new user: ");
-        String username = scanner.nextLine();
+        String username = InputUtil.promptNonEmpty("Enter username for new user: ");
         User existingUser = userDAO.get(username);
         if (existingUser != null) {
             System.out.println("Username already exists.");
@@ -262,8 +252,7 @@ public class LibrarySystem {
         }
 
         // check new user type
-        System.out.print("Register the new user as Admin? (y/n): ");
-        boolean isAdmin = scanner.nextLine().equalsIgnoreCase("y");
+        boolean isAdmin = InputUtil.promptYesNo("Register the new user as Admin?");
 
         User newUser = isAdmin ? new Admin(username) : new RegularUser(username);
         userDAO.save(newUser);
