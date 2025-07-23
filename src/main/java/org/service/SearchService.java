@@ -1,15 +1,20 @@
 package org.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class SearchService<T> {
-    public List<T> searchById(String id) {
-        // Logic to search by ID
-        return null;
+import org.marker.Searchable;
+
+public class SearchService<T extends Searchable> {
+    public List<T> searchById(List<T> dataSource, int id) {
+        return dataSource.stream()
+                .filter(item -> item.getId() == id)
+                .collect(Collectors.toList());
     }
 
-    public List<T> searchByTitle(String title) {
-        // Logic to search by title
-        return null;
+    public List<T> searchByTitle(List<T> dataSource, String title) {
+        return dataSource.stream()
+                .filter(item -> item.getTitle().equals(title))
+                .collect(Collectors.toList());
     }
 }
