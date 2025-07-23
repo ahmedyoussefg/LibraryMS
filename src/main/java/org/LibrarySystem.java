@@ -1,5 +1,6 @@
 package org;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -173,7 +174,9 @@ public class LibrarySystem {
             System.out.println("You have no borrowed books.");
         } else {
             System.out.println("Your Borrowed Books:");
-            borrowed.forEach(System.out::println);
+            borrowed.stream()
+                    .sorted(Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER))
+                    .forEach(System.out::println);
         }
     }
 
@@ -239,7 +242,9 @@ public class LibrarySystem {
             System.out.println("No books in catalogue.");
         } else {
             System.out.println("\nAvailable Books:");
-            books.forEach(System.out::println);
+            books.stream()
+                 .sorted(Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER))
+                 .forEach(System.out::println);
         }
     }
 

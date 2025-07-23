@@ -64,4 +64,8 @@ public class Book {
     public int hashCode() {
         return Integer.hashCode(bookId);
     }
+
+    public String getTitle() {
+        return title;
+    }
 }
