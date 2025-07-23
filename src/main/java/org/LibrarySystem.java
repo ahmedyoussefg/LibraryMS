@@ -87,15 +87,16 @@ public class LibrarySystem {
         while (true) {
             System.out.println("\n--- Admin Menu ---");
             System.out.println("1. Add Book\n2. Delete Book\n3. View Catalogue\n" +
-                    "4. Register a New User\n5. Log Out");
+                    "4. Search Books\n5. Register a New User\n6. Log Out");
             String choice = InputUtil.prompt("Choose option: ");
 
             switch (choice) {
                 case "1" -> addBook();
                 case "2" -> deleteBook();
                 case "3" -> viewCatalogue();
-                case "4" -> registerUser();
-                case "5" -> {
+                case "4" -> searchBooks();
+                case "5" -> registerUser();
+                case "6" -> {
                     currentUser = null;
                     return;
                 }
@@ -107,15 +108,17 @@ public class LibrarySystem {
     private void userMenu() {
         while (true) {
             System.out.println("\n--- User Menu ---");
-            System.out.println("1. View Catalogue\n2. Borrow Book\n3. Return Book\n4. My Borrowed Books\n5. Log Out");
+            System.out.println("1. View Catalogue\n2. Search Books\n3. Borrow Book\n4. Return Book\n" +
+                    "5. My Borrowed Books\n6. Log Out");
             String choice = InputUtil.prompt("Choose option: ");
 
             switch (choice) {
                 case "1" -> viewCatalogue();
-                case "2" -> borrowBook();
-                case "3" -> returnBook();
-                case "4" -> viewBorrowedBooks();
-                case "5" -> {
+                case "2" -> searchBooks();
+                case "3" -> borrowBook();
+                case "4" -> returnBook();
+                case "5" -> viewBorrowedBooks();
+                case "6" -> {
                     currentUser = null;
                     return;
                 }
@@ -257,6 +260,35 @@ public class LibrarySystem {
         User newUser = isAdmin ? new Admin(username) : new RegularUser(username);
         userDAO.save(newUser);
         System.out.println("New user registered successfully.");
+    }
+    private void searchBooks() {
+        System.out.println("\n--- Search Books ---");
+        String option = InputUtil.prompt("Search by (1) ID or (2) Title? ");
+        List<Book> latestBooks = bookDAO.getAll();
+        List<Book> results;
+        switch (option) {
+            case "1" -> {
+                int findId = InputUtil.promptInt("Enter Book ID: ");
+                results = bookSearchService.searchById(latestBooks, findId);
+            }
+            case "2" -> {
+                String findTitle = InputUtil.promptNonEmpty("Enter Book Title: ");
+                results = bookSearchService.searchByTitle(latestBooks, findTitle);
+            }
+            default -> {
+                System.out.println("Invalid search option.");
+                return;
+            }
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("No matching books found.");
+        } else {
+            System.out.println("\nSearch Results:");
+            results.stream()
+                   .sorted(Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER))
+                   .forEach(System.out::println);
+        }
     }
 }
 
