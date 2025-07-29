@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: library-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: library-app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    stdin_open: true
+    tty: true
+
+  adminer:
+    image: adminer
+    container_name: library-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
