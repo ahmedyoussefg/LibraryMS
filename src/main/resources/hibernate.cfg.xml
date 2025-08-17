@@ -15,8 +15,8 @@
 
         <!-- Database connection settings -->
         <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost:3306/library-db?createDatabaseIfNotExist=true</property>
-        <property name="connection.username">root</property>
+        <property name="connection.url">jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=true</property>
+        <property name="connection.username">${DB_USER}</property>
         <property name="connection.password">${DB_PASSWORD}</property>
 
         <!-- SQL dialect -->

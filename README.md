@@ -21,6 +21,11 @@ A Java console-based Library Management System built using OOP principles, Hiber
 - **MySQL**
 - **Jakarta Persistence API (JPA)**
 - **dotenv-java** for environment variable support
+- **Docker & Docker Compose** for containerization
+
+## 📦 Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)  
+- [Docker Compose](https://docs.docker.com/compose/install/)  
 
 ## 🗂 Project Structure
 
@@ -45,21 +50,61 @@ git clone https://github.com/ahmedyoussefg/LibraryMS.git
 cd LibraryMS
 ```
 
-### 2. Setup MySQL
-- Create a MySQL user with appropriate privileges.
-
-- The app uses the database library-db (auto-created if not found).
-
-- Add a .env file in the root directory with the following, make sure to add your MySQL password:
-```
+### 2. Create a .env file in the project root with the following variables:
+```bash
+DB_USER=your_mysql_username
 DB_PASSWORD=your_mysql_password
+DB_NAME=library-db
+DB_HOST=db
+DB_PORT=3306
 ```
-### 3. Run the Main class
 
-## 📦 Dependencies
-- `hibernate-core`
-- `jakarta.persistence`
-- `mysql-connector-java`
-- `dotenv-java`
+### 3. Start the Application using Docker Compose
+
+```bash
+docker compose up --build
+```
+This will:
+
+- Build the application container
+
+- Set up a MySQL database
+
+- Launch Adminer for database management at `localhost:8080`
+
+### 4. Use the Library Management System
+
+```bash
+docker compose run app
+```
+
+- Adminer (Database Management)
+    - Available at http://localhost:8080
+
+    - System: MySQL
+
+    - Server: db
+
+    - Username: as in .env
+
+    - Password: as in .env
+
+    - Database: library-db
+
+## 🛠️ Troubleshooting Tips
+###
+Check Running Containers
+Use the following command to view active containers:
+```bash
+docker ps
+```
+### Permission Denied for Docker Commands
+
+Use `sudo` Or add your user to the docker group:
+
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
 > Created by Ahmed Youssef
